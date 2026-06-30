@@ -743,6 +743,31 @@ footer.fab-wrap .inner{width:100%;max-width:var(--maxw);display:flex;justify-con
 .review-actions{display:flex;gap:8px;}
 .btn-approve{flex:1;padding:10px;border-radius:9px;border:none;background:var(--teal);color:#fff;font-size:13px;font-weight:700;cursor:pointer;}
 .btn-reject{padding:10px 14px;border-radius:9px;background:transparent;color:var(--text-dimmer);border:1px solid var(--border);font-size:13px;font-weight:600;cursor:pointer;}
+
+/* ═══ PANEL ESTADÍSTICAS (admin) ═══ */
+#statsModal{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:55;display:flex;align-items:flex-end;justify-content:center;}
+#statsModal[hidden]{display:none;}
+.stats-sheet{width:100%;max-width:var(--maxw);background:var(--bg-elevated);border-radius:24px 24px 0 0;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;animation:slide-up .32s cubic-bezier(.22,1,.36,1);}
+.stats-header{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.stats-title{font-size:16px;font-weight:800;}
+.stats-close{background:none;border:none;color:var(--text-dimmer);font-size:26px;cursor:pointer;padding:2px 6px;}
+.stats-body{padding:16px 16px 60px;}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+.stat-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;}
+.stat-value{font-size:28px;font-weight:900;background:linear-gradient(90deg,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;}
+.stat-label{font-size:11px;font-weight:700;color:var(--text);margin-top:3px;}
+.stat-sub{font-size:10px;color:var(--text-dimmer);}
+.stats-section{margin-bottom:16px;}
+.stats-section-title{font-size:11px;font-weight:800;color:var(--text-dimmer);text-transform:uppercase;letter-spacing:.09em;margin:0 0 8px;display:flex;align-items:center;gap:8px;}
+.stats-section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.stats-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(42,42,85,.4);}
+.stats-row:last-child{border-bottom:none;}
+.stats-row-info{flex:1;min-width:0;}
+.stats-row-name{font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.stats-row-val{font-size:14px;font-weight:800;color:var(--accent);flex-shrink:0;margin-left:10px;}
+.stats-bar{height:3px;background:var(--border);border-radius:2px;margin-top:4px;}
+.stats-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#a855f7,#ec4899);}
+.stats-empty{text-align:center;color:var(--text-dimmer);padding:40px 0;font-size:14px;}
 </style>
 </head>
 <body>
@@ -756,6 +781,7 @@ footer.fab-wrap .inner{width:100%;max-width:var(--maxw);display:flex;justify-con
       <button class="iconbtn" id="themeBtn" title="Cambiar modo día/noche">🌙</button>
       <button class="iconbtn" id="notifBtn" title="Activar notificaciones">🔔</button>
       <button class="iconbtn" id="locateBtn" title="Centrar en mi ubicación">📍</button>
+      <button class="iconbtn" id="statsBtn" title="Estadísticas" hidden>📊</button>
       <button class="iconbtn" id="loginBtn" title="Iniciar sesión (solo admin)">🔑</button>
     </div>
     <input type="search" id="searchBar" class="search-bar" placeholder="🔍 Buscar artista o recinto..." autocomplete="off" />
@@ -1018,6 +1044,20 @@ footer.fab-wrap .inner{width:100%;max-width:var(--maxw);display:flex;justify-con
 </div>
 
 <!-- BANNER DE INSTALACIÓN -->
+<!-- MODAL: ESTADÍSTICAS (admin) -->
+<div id="statsModal" hidden>
+  <div class="stats-sheet">
+    <div style="width:36px;height:4px;border-radius:2px;background:var(--border);margin:12px auto 0;"></div>
+    <div class="stats-header">
+      <span class="stats-title">📊 Estadísticas</span>
+      <button class="stats-close" id="statsCloseBtn">×</button>
+    </div>
+    <div class="stats-body" id="statsBody">
+      <div class="stats-empty">Cargando métricas...</div>
+    </div>
+  </div>
+</div>
+
 <div id="installBanner" hidden>
   <div class="install-sheet" id="installSheet">
     <!-- contenido inyectado por JS según plataforma -->
@@ -1031,6 +1071,85 @@ footer.fab-wrap .inner{width:100%;max-width:var(--maxw);display:flex;justify-con
 const SUPABASE_URL = "https://outtzlwgzijxtxehqjgz.supabase.co";
 const SUPABASE_KEY = "sb_publishable_tN0p9r8CWK35ehfJiPYbCg_9vFyRWq4";
 const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+/* ═══ ANALYTICS ═══ */
+const SESSION_ID=(()=>{let s=sessionStorage.getItem('r_sid');if(!s){s=crypto.randomUUID();sessionStorage.setItem('r_sid',s);}return s;})();
+const USER_ID=(()=>{let u=localStorage.getItem('r_uid');if(!u){u=crypto.randomUUID();localStorage.setItem('r_uid',u);}return u;})();
+function getDevice(){const ua=navigator.userAgent;return /iphone|ipad|ipod/i.test(ua)?'ios':/android/i.test(ua)?'android':'desktop';}
+async function track(ev,extra={}){
+  try{
+    const row={event_type:ev,device:getDevice(),session_id:SESSION_ID,user_id:USER_ID};
+    if(extra.concert_id) row.concert_id=extra.concert_id;
+    if(extra.city) row.city=extra.city;
+    await supa.from('analytics').insert(row);
+  }catch(e){}
+}
+// Rastrear clics en entradas por delegación (sin modificar el template)
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('a.buy-btn[href],a.cday-link.buy[href]');
+  if(btn){
+    const card=btn.closest('[data-cid]');
+    if(card) track('ticket_click',{concert_id:card.dataset.cid});
+  }
+});
+
+/* ═══ PANEL ESTADÍSTICAS ═══ */
+async function loadAnalytics(){
+  const body=document.getElementById('statsBody');
+  body.innerHTML='<div class="stats-empty">Cargando...</div>';
+  const since7=new Date(Date.now()-7*864e5).toISOString();
+  const since30=new Date(Date.now()-30*864e5).toISOString();
+  try{
+    const[r7,r30,rAll,rTickets,rViews,rCities,rInstalls]=await Promise.all([
+      supa.from('analytics').select('id',{count:'exact',head:true}).gte('created_at',since7).eq('event_type','app_open'),
+      supa.from('analytics').select('id',{count:'exact',head:true}).gte('created_at',since30).eq('event_type','app_open'),
+      supa.from('analytics').select('id',{count:'exact',head:true}).eq('event_type','app_open'),
+      supa.from('analytics').select('id',{count:'exact',head:true}).eq('event_type','ticket_click'),
+      supa.from('analytics').select('concert_id').eq('event_type','event_view'),
+      supa.from('analytics').select('city').eq('event_type','app_open').not('city','is',null),
+      supa.from('analytics').select('id',{count:'exact',head:true}).eq('event_type','pwa_install'),
+    ]);
+    const opens7=r7.count??0,opens30=r30.count??0,opensAll=rAll.count??0,
+          tickets=rTickets.count??0,installs=rInstalls.count??0;
+    // Agrupar eventos por concierto
+    const ev={};
+    (rViews.data||[]).forEach(r=>{if(r.concert_id)ev[r.concert_id]=(ev[r.concert_id]||0)+1;});
+    const topEv=Object.entries(ev).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    // Agrupar por ciudad
+    const ci={};
+    (rCities.data||[]).forEach(r=>{if(r.city)ci[r.city]=(ci[r.city]||0)+1;});
+    const topCi=Object.entries(ci).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    // Nombres de conciertos
+    let cnames={};
+    if(topEv.length){
+      const{data:cs}=await supa.from('concerts').select('id,name').in('id',topEv.map(([id])=>id));
+      (cs||[]).forEach(c=>cnames[c.id]=c.name);
+    }
+    const maxEv=topEv[0]?.[1]||1,maxCi=topCi[0]?.[1]||1;
+    const pct=(v,max)=>Math.max(4,Math.round(v/max*100));
+    body.innerHTML=`
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-value">${opens7.toLocaleString('es')}</div><div class="stat-label">Aperturas</div><div class="stat-sub">últimos 7 días</div></div>
+        <div class="stat-card"><div class="stat-value">${opens30.toLocaleString('es')}</div><div class="stat-label">Aperturas</div><div class="stat-sub">últimos 30 días</div></div>
+        <div class="stat-card"><div class="stat-value">${tickets.toLocaleString('es')}</div><div class="stat-label">Clics en entradas</div><div class="stat-sub">total histórico</div></div>
+        <div class="stat-card"><div class="stat-value">${installs.toLocaleString('es')}</div><div class="stat-label">Instalaciones PWA</div><div class="stat-sub">total histórico</div></div>
+      </div>
+      ${topEv.length?`<div class="stats-section">
+        <div class="stats-section-title">🎵 Eventos más vistos</div>
+        ${topEv.map(([id,n])=>`<div class="stats-row"><div class="stats-row-info"><div class="stats-row-name">${escapeHtml(cnames[id]||'Evento')}</div><div class="stats-bar"><div class="stats-bar-fill" style="width:${pct(n,maxEv)}%"></div></div></div><div class="stats-row-val">${n}</div></div>`).join('')}
+      </div>`:''}
+      ${topCi.length?`<div class="stats-section">
+        <div class="stats-section-title">📍 Ciudades más activas</div>
+        ${topCi.map(([city,n])=>`<div class="stats-row"><div class="stats-row-info"><div class="stats-row-name">${city}</div><div class="stats-bar"><div class="stats-bar-fill" style="width:${pct(n,maxCi)}%"></div></div></div><div class="stats-row-val">${n}</div></div>`).join('')}
+      </div>`:''}
+      <div style="text-align:center;font-size:11px;color:var(--text-dimmer);margin-top:10px">Total histórico: ${opensAll.toLocaleString('es')} sesiones</div>
+    `;
+  }catch(e){body.innerHTML=`<div class="stats-empty">⚠️ Tabla analytics no creada aún.<br><small>${e.message}</small></div>`;}
+}
+const statsModal=document.getElementById('statsModal');
+document.getElementById('statsBtn').addEventListener('click',()=>{statsModal.hidden=false;document.body.style.overflow='hidden';loadAnalytics();});
+document.getElementById('statsCloseBtn').addEventListener('click',()=>{statsModal.hidden=true;document.body.style.overflow='';});
+statsModal.addEventListener('click',e=>{if(e.target===statsModal){statsModal.hidden=true;document.body.style.overflow='';}});
 
 /* 16 regiones de Chile */
 const REGIONS = [
@@ -1828,6 +1947,8 @@ async function refreshAuthUI(){
   loginBtn.title=currentSession?"Cerrar sesión de administrador":"Iniciar sesión (solo admin)";
   const reviewBtn=document.getElementById("reviewBtn");
   if(reviewBtn) reviewBtn.style.display=currentSession?"flex":"none";
+  const statsBtn=document.getElementById("statsBtn");
+  if(statsBtn) statsBtn.hidden=!currentSession;
   if(currentSession) loadPendingCount();
 }
 try{ supa.auth.onAuthStateChange(()=>refreshAuthUI()); }catch(e){}
@@ -2148,6 +2269,7 @@ if(!isStandalone() && !installDismissed() && isInAppBrowser()){
 window.addEventListener("appinstalled", ()=>{
   deferredInstallPrompt = null;
   installBanner.hidden = true;
+  track('pwa_install');
   showToast("✅ ¡App instalada correctamente!");
 });
 
@@ -2186,7 +2308,9 @@ async function fetchWeather(lat,lng,date){
 }
 
 async function openConcertDay(c){
+  track('event_view',{concert_id:c.id,city:c.city});
   const modal=document.getElementById("concertDayModal");
+  modal.querySelector('.cday-sheet').dataset.cid=c.id;
   const status=getStatus(c);
   document.getElementById("cdayTitle").textContent=c.name;
   document.getElementById("cdayVenue").textContent="📍 "+c.venue.split(" - ")[0];
@@ -2430,6 +2554,7 @@ function init(){
   fetchConcerts();
   setInterval(fetchConcerts,60000);
   setInterval(render,30000);
+  track('app_open');
 }
 init();
 </script>
