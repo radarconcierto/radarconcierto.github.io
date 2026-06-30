@@ -157,6 +157,73 @@ async function fetchPage(url:string):Promise<string|null> {
 }
 
 /* ═══════════════════════════════
+   SCRAPER 0: PUNTOTICKET (conciertos comerciales)
+════════════════════════════════ */
+async function scrapePuntoTicket():Promise<Concert[]> {
+  const concerts:Concert[]=[];
+  const urls=[
+    "https://www.puntoticket.com",
+    "https://www.puntoticket.com/categoria/musica",
+    "https://www.puntoticket.com/categoria/conciertos",
+    "https://www.puntoticket.com/categoria/festivales",
+  ];
+  for(const url of urls){
+    const html=await fetchPage(url);
+    if(!html) continue;
+    console.log(`PuntoTicket ${url}: ${html.length} chars`);
+    const jsonLDs=extractJsonLD(html);
+    for(const ld of jsonLDs){
+      const events:any[]=
+        ld["@type"]==="Event"?[ld]:
+        ld["@type"]==="ItemList"?(ld.itemListElement||[]).map((e:any)=>e.item||e):
+        Array.isArray(ld)?ld.filter((e:any)=>e["@type"]==="Event"):[];
+      for(const ev of events){
+        if(!ev.name||!ev.startDate) continue;
+        const venueName=ev.location?.name||"Por confirmar";
+        const cityRaw=ev.location?.address?.addressLocality||"";
+        const city=cityFromVenue(venueName)||cityFromText(cityRaw)||"santiago";
+        const [lat,lng]=venueCoords(venueName);
+        const startsAt=ev.startDate.length===10?`${ev.startDate}T20:00:00`:ev.startDate;
+        const img=Array.isArray(ev.image)?ev.image[0]:ev.image||null;
+        concerts.push({
+          name:ev.name, venue:venueName, city,
+          address:ev.location?.address?.streetAddress||null,
+          lat, lng, starts_at:startsAt, ends_at:ev.endDate||addHours(startsAt,3),
+          ticket_url:ev.url||url, price_note:null,
+          poster_url:typeof img==="string"?img:img?.url||null,
+          created_by:"puntoticket_auto",
+        });
+      }
+    }
+    // HTML fallback
+    const doc=parse(html);
+    const cards=Array.from(doc.querySelectorAll("a")).filter((a:any)=>a.querySelector("h3")&&a.querySelector("img"));
+    for(const card of cards.slice(0,60)){
+      const name=(card.querySelector("h3")?.text||"").trim();
+      if(!name||name.length<3) continue;
+      const href=card.getAttribute("href")||"";
+      const ticketUrl=href.startsWith("http")?href:href?`https://www.puntoticket.com${href}`:url;
+      const paras=Array.from(card.querySelectorAll("p")).map((p:any)=>p.text.trim()).filter((t:string)=>t.length>1);
+      const dateText=paras.find((t:string)=>/\d/.test(t))||"";
+      const locationText=paras.find((t:string)=>!/\d{4}/.test(t)&&t.length>2)||"";
+      const img=card.querySelector("img")?.getAttribute("src")||null;
+      const city=cityFromText(locationText)||"santiago";
+      const [lat,lng]=venueCoords(locationText);
+      const startsAt=parseDate(dateText)||addHours(new Date().toISOString(),720);
+      concerts.push({
+        name, venue:locationText||"Por confirmar", city,
+        address:null, lat, lng,
+        starts_at:startsAt, ends_at:addHours(startsAt,3),
+        ticket_url:ticketUrl, price_note:null,
+        poster_url:img?.startsWith("http")?img:null,
+        created_by:"puntoticket_auto",
+      });
+    }
+  }
+  return concerts;
+}
+
+/* ═══════════════════════════════
    SCRAPER 1: EVENTBRITE
 ════════════════════════════════ */
 async function scrapeEventbrite():Promise<Concert[]> {
@@ -412,17 +479,18 @@ Deno.serve(async(req:Request)=>{
     }
     log.push("✓ Limpieza de eventos anteriores");
 
-    // Correr los 3 scrapers en paralelo
-    log.push("Scraping Eventbrite, Passline y PortalTicket...");
-    const [eb,pl,pt]=await Promise.all([
+    // Correr los 4 scrapers en paralelo
+    log.push("Scraping PuntoTicket, Eventbrite, Passline y PortalTicket...");
+    const [ptt,eb,pl,pt]=await Promise.all([
+      scrapePuntoTicket().catch(e=>{log.push(`PuntoTicket error: ${e}`);return[];}),
       scrapeEventbrite().catch(e=>{log.push(`Eventbrite error: ${e}`);return[];}),
       scrapePassline().catch(e=>{log.push(`Passline error: ${e}`);return[];}),
       scrapePortalTicket().catch(e=>{log.push(`PortalTicket error: ${e}`);return[];}),
     ]);
 
-    log.push(`Eventbrite: ${eb.length} | Passline: ${pl.length} | PortalTicket: ${pt.length}`);
+    log.push(`PuntoTicket: ${ptt.length} | Eventbrite: ${eb.length} | Passline: ${pl.length} | PortalTicket: ${pt.length}`);
 
-    const all=dedup([...eb,...pl,...pt]);
+    const all=dedup([...ptt,...eb,...pl,...pt]);
     log.push(`Total sin duplicados y futuros: ${all.length}`);
 
     if(all.length===0){
