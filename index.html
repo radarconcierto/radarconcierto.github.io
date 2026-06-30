@@ -692,6 +692,41 @@ footer.fab-wrap .inner{width:100%;max-width:var(--maxw);display:flex;justify-con
 .weather-note{font-size:12px;color:var(--text-dimmer);}
 .btn-plan{display:block;width:100%;margin-top:8px;background:rgba(6,182,212,.1);color:var(--teal);border:1px solid rgba(6,182,212,.28);border-radius:12px;font-size:12.5px;font-weight:700;padding:10px;cursor:pointer;text-align:center;transition:background .15s,border-color .15s;}
 .btn-plan:hover{background:rgba(6,182,212,.2);border-color:var(--teal);}
+
+/* ═══ PROPONER EVENTO (público) ═══ */
+#submitEventFab{position:fixed;bottom:86px;right:16px;z-index:40;background:var(--teal);color:#fff;border:none;border-radius:50px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(6,182,212,.45);display:flex;align-items:center;gap:6px;transition:transform .15s,box-shadow .15s;}
+#submitEventFab:hover{transform:scale(1.05);box-shadow:0 6px 20px rgba(6,182,212,.55);}
+#submitModal{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:55;display:flex;align-items:flex-end;justify-content:center;}
+#submitModal[hidden]{display:none;}
+.submit-sheet{width:100%;max-width:var(--maxw);background:var(--bg-elevated);border-radius:24px 24px 0 0;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;animation:slide-up .32s cubic-bezier(.22,1,.36,1);}
+.submit-handle{width:36px;height:4px;border-radius:2px;background:var(--border);margin:12px auto 0;}
+.submit-header{padding:10px 16px 0;display:flex;align-items:center;justify-content:space-between;}
+.submit-top-label{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:linear-gradient(90deg,var(--teal),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.submit-close{background:none;border:none;color:var(--text-dimmer);font-size:26px;cursor:pointer;line-height:1;padding:2px 6px;}
+.submit-desc{font-size:13px;color:var(--text-dim);margin:10px 16px 0;line-height:1.5;padding:10px;background:rgba(6,182,212,.07);border-radius:10px;border:1px solid rgba(6,182,212,.18);}
+.submit-form{padding:4px 16px 48px;}
+.submit-form label{display:block;font-size:12px;color:var(--text-dim);margin:11px 0 4px;}
+.submit-form input,.submit-form select,.submit-form textarea{width:100%;background:var(--bg-card);color:var(--text);border:1px solid var(--border);border-radius:9px;padding:10px;font-size:14px;box-sizing:border-box;}
+.submit-form .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.btn-submit-event{width:100%;margin-top:18px;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--teal),var(--accent));color:#fff;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(6,182,212,.35);}
+
+/* ═══ REVISIÓN DE ENVÍOS (admin) ═══ */
+.btn-review{position:relative;background:rgba(6,182,212,.15);border:1px solid rgba(6,182,212,.3);color:var(--teal);border-radius:12px;padding:10px 14px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.pending-badge{position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;font-size:10px;font-weight:800;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 4px;}
+#reviewModal{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:55;display:flex;align-items:flex-end;justify-content:center;}
+#reviewModal[hidden]{display:none;}
+.review-sheet{width:100%;max-width:var(--maxw);background:var(--bg-elevated);border-radius:24px 24px 0 0;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;animation:slide-up .32s cubic-bezier(.22,1,.36,1);}
+.review-header{padding:12px 16px 0;display:flex;align-items:center;justify-content:space-between;}
+.review-title{font-size:15px;font-weight:800;color:var(--text);}
+.review-list{padding:10px 16px 48px;}
+.review-empty{text-align:center;color:var(--text-dimmer);font-size:14px;padding:40px 0;}
+.review-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;}
+.review-name{font-size:14px;font-weight:700;margin:0 0 3px;color:var(--text);}
+.review-meta{font-size:12px;color:var(--text-dim);margin:0 0 10px;line-height:1.6;}
+.review-submitter{font-size:11px;color:var(--text-dimmer);margin:0 0 10px;}
+.review-actions{display:flex;gap:8px;}
+.btn-approve{flex:1;padding:10px;border-radius:9px;border:none;background:var(--teal);color:#fff;font-size:13px;font-weight:700;cursor:pointer;}
+.btn-reject{padding:10px 14px;border-radius:9px;background:transparent;color:var(--text-dimmer);border:1px solid var(--border);font-size:13px;font-weight:600;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -765,10 +800,87 @@ footer.fab-wrap .inner{width:100%;max-width:var(--maxw);display:flex;justify-con
     <div id="listContainer"></div>
   </main>
 
+  <!-- FAB PÚBLICO: proponer evento -->
+  <button id="submitEventFab" title="Proponer un evento">✚ Proponer evento</button>
+
   <!-- FAB ADMIN -->
   <footer class="fab-wrap" id="fabWrap" hidden>
-    <div class="inner"><button id="addBtn" title="Agregar concierto">+</button></div>
+    <div class="inner" style="display:flex;gap:8px;align-items:center">
+      <button class="btn-review" id="reviewBtn" style="display:none" title="Revisar envíos pendientes">
+        📥 Revisar
+        <span class="pending-badge" id="pendingBadge" hidden>0</span>
+      </button>
+      <button id="addBtn" title="Agregar concierto">+</button>
+    </div>
   </footer>
+
+  <!-- MODAL: PROPONER EVENTO (público) -->
+  <div id="submitModal" hidden>
+    <div class="submit-sheet">
+      <div class="submit-handle"></div>
+      <div class="submit-header">
+        <span class="submit-top-label">✚ Proponer un evento</span>
+        <button class="submit-close" id="submitCloseBtn">×</button>
+      </div>
+      <p class="submit-desc">¿Tienes un concierto, tocata o festival que no aparece aquí? Súbelo y lo revisamos en menos de 24 horas. ¡Gratis!</p>
+      <form class="submit-form" id="submitEventForm">
+        <label>Nombre del evento / artista *</label>
+        <input type="text" id="se_name" required placeholder="Ej: Machuca + Pancho Folk" />
+
+        <label>Lugar (venue) *</label>
+        <input type="text" id="se_venue" required placeholder="Ej: Teatro Trotamundos" />
+
+        <label>Ciudad *</label>
+        <select id="se_city" required></select>
+
+        <label>Dirección (opcional)</label>
+        <input type="text" id="se_address" placeholder="Ej: Av. Pedro Montt 2222, Valparaíso" />
+
+        <div class="row2">
+          <div>
+            <label>Fecha y hora de inicio *</label>
+            <input type="datetime-local" id="se_starts" required />
+          </div>
+          <div>
+            <label>Fecha y hora de término</label>
+            <input type="datetime-local" id="se_ends" />
+          </div>
+        </div>
+
+        <label>Precio / info de entrada</label>
+        <input type="text" id="se_price" placeholder="Ej: $8.000 anticipada / $10.000 en puerta" />
+
+        <label>Link de entradas (opcional)</label>
+        <input type="url" id="se_ticket" placeholder="https://..." />
+
+        <label>Instagram del artista o evento (opcional)</label>
+        <input type="text" id="se_instagram" placeholder="@nombre" />
+
+        <label>URL del afiche/póster (opcional)</label>
+        <input type="url" id="se_poster" placeholder="https://..." />
+
+        <label>Tu nombre (opcional)</label>
+        <input type="text" id="se_submitter_name" placeholder="Para mencionarte cuando lo publiquemos" />
+
+        <label>Tu contacto: email o Instagram (opcional)</label>
+        <input type="text" id="se_submitter_contact" placeholder="email@... o @instagram" />
+
+        <button type="submit" class="btn-submit-event">Enviar propuesta</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: REVISAR ENVÍOS (solo admin) -->
+  <div id="reviewModal" hidden>
+    <div class="review-sheet">
+      <div class="submit-handle"></div>
+      <div class="review-header">
+        <span class="review-title">📥 Propuestas pendientes</span>
+        <button class="submit-close" id="reviewCloseBtn">×</button>
+      </div>
+      <div class="review-list" id="reviewList"></div>
+    </div>
+  </div>
 
   <!-- MODAL: LOGIN -->
   <div class="modal-backdrop" id="loginBackdrop" hidden>
@@ -1702,6 +1814,9 @@ async function refreshAuthUI(){
   fabWrap.hidden=!currentSession;
   loginBtn.textContent=currentSession?"🔓":"🔑";
   loginBtn.title=currentSession?"Cerrar sesión de administrador":"Iniciar sesión (solo admin)";
+  const reviewBtn=document.getElementById("reviewBtn");
+  if(reviewBtn) reviewBtn.style.display=currentSession?"flex":"none";
+  if(currentSession) loadPendingCount();
 }
 try{ supa.auth.onAuthStateChange(()=>refreshAuthUI()); }catch(e){}
 
@@ -2115,6 +2230,147 @@ document.getElementById("concertDayCloseBtn").addEventListener("click",()=>{
 /* ═══════════════════════════════════════════════
    INICIO
 ═══════════════════════════════════════════════ */
+/* ═══ PROPONER EVENTO (público) ═══ */
+(function(){
+  const fab=document.getElementById("submitEventFab");
+  const modal=document.getElementById("submitModal");
+  const closeBtn=document.getElementById("submitCloseBtn");
+  const form=document.getElementById("submitEventForm");
+  const citySelect=document.getElementById("se_city");
+
+  // Poblar ciudades
+  REGIONS.forEach(r=>{
+    r.aliases.forEach(a=>{
+      const opt=document.createElement("option");
+      opt.value=a;
+      opt.textContent=r.label+" — "+a;
+      citySelect.appendChild(opt);
+    });
+  });
+
+  fab.addEventListener("click",()=>{
+    modal.hidden=false;
+    document.body.style.overflow="hidden";
+  });
+  const close=()=>{ modal.hidden=true; document.body.style.overflow=""; };
+  closeBtn.addEventListener("click",close);
+  modal.addEventListener("click",e=>{ if(e.target===modal) close(); });
+
+  form.addEventListener("submit",async e=>{
+    e.preventDefault();
+    const btn=form.querySelector(".btn-submit-event");
+    btn.textContent="Enviando...";btn.disabled=true;
+    const payload={
+      name: escapeHtml(document.getElementById("se_name").value.trim()),
+      venue: escapeHtml(document.getElementById("se_venue").value.trim()),
+      city: document.getElementById("se_city").value,
+      address: escapeHtml(document.getElementById("se_address").value.trim()),
+      starts_at: document.getElementById("se_starts").value,
+      ends_at: document.getElementById("se_ends").value||null,
+      price_note: escapeHtml(document.getElementById("se_price").value.trim()),
+      ticket_url: document.getElementById("se_ticket").value.trim(),
+      instagram: escapeHtml(document.getElementById("se_instagram").value.trim()),
+      poster_url: document.getElementById("se_poster").value.trim(),
+      submitter_name: escapeHtml(document.getElementById("se_submitter_name").value.trim()),
+      submitter_contact: escapeHtml(document.getElementById("se_submitter_contact").value.trim()),
+      status:"pending"
+    };
+    try{
+      const {error}=await supa.from("submissions").insert([payload]);
+      if(error) throw error;
+      form.reset();
+      close();
+      showToast("¡Gracias! Lo revisamos en menos de 24 horas 🎵");
+    }catch(err){
+      showToast("Error al enviar: "+err.message);
+      btn.textContent="Enviar propuesta";btn.disabled=false;
+    }
+  });
+})();
+
+/* ═══ REVISAR ENVÍOS (admin) ═══ */
+async function loadPendingCount(){
+  try{
+    const {count}=await supa.from("submissions").select("id",{count:"exact",head:true}).eq("status","pending");
+    const badge=document.getElementById("pendingBadge");
+    if(badge){ badge.textContent=count||0; badge.hidden=!count; }
+  }catch(e){}
+}
+
+async function loadReviewList(){
+  const list=document.getElementById("reviewList");
+  list.innerHTML='<p class="review-empty">Cargando...</p>';
+  try{
+    const {data,error}=await supa.from("submissions").select("*").eq("status","pending").order("created_at",{ascending:true});
+    if(error) throw error;
+    if(!data||!data.length){ list.innerHTML='<p class="review-empty">✅ Sin propuestas pendientes</p>'; return; }
+    list.innerHTML=data.map(s=>`
+      <div class="review-card" id="rcard-${s.id}">
+        <p class="review-name">${escapeHtml(s.name)}</p>
+        <p class="review-meta">
+          📍 ${escapeHtml(s.venue)} — ${escapeHtml(s.city)}<br>
+          📅 ${s.starts_at?new Date(s.starts_at).toLocaleDateString("es-CL",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):""}<br>
+          ${s.price_note?'💰 '+escapeHtml(s.price_note)+'<br>':''}
+          ${s.ticket_url?'🎟 <a href="'+escapeHtml(s.ticket_url)+'" target="_blank" style="color:var(--accent)">Link entradas</a><br>':''}
+          ${s.instagram?'📸 '+escapeHtml(s.instagram)+'<br>':''}
+        </p>
+        ${s.submitter_name||s.submitter_contact?`<p class="review-submitter">Enviado por: ${escapeHtml(s.submitter_name||"")} ${escapeHtml(s.submitter_contact||"")}</p>`:''}
+        <div class="review-actions">
+          <button class="btn-approve" onclick="approveSubmission('${s.id}',this)">✅ Publicar</button>
+          <button class="btn-reject" onclick="rejectSubmission('${s.id}',this)">Rechazar</button>
+        </div>
+      </div>`).join("");
+  }catch(e){ list.innerHTML='<p class="review-empty">Error al cargar: '+e.message+'</p>'; }
+}
+
+async function approveSubmission(id,btn){
+  btn.textContent="Publicando...";btn.disabled=true;
+  try{
+    const {data,error}=await supa.from("submissions").select("*").eq("id",id).single();
+    if(error) throw error;
+    const concert={
+      name:data.name, venue:data.venue, city:data.city,
+      address:data.address||null, lat:data.lat||null, lng:data.lng||null,
+      starts_at:data.starts_at, ends_at:data.ends_at||null,
+      ticket_url:data.ticket_url||null, price_note:data.price_note||null,
+      instagram:data.instagram||null, poster_url:data.poster_url||null,
+      created_by:"community"
+    };
+    const {error:e2}=await supa.from("concerts").insert([concert]);
+    if(e2) throw e2;
+    await supa.from("submissions").update({status:"approved"}).eq("id",id);
+    document.getElementById("rcard-"+id).remove();
+    loadPendingCount();
+    showToast("✅ Evento publicado");
+    fetchConcerts();
+  }catch(e){ showToast("Error: "+e.message); btn.textContent="✅ Publicar";btn.disabled=false; }
+}
+
+async function rejectSubmission(id,btn){
+  if(!confirm("¿Rechazar esta propuesta?")) return;
+  btn.textContent="...";btn.disabled=true;
+  await supa.from("submissions").update({status:"rejected"}).eq("id",id);
+  document.getElementById("rcard-"+id).remove();
+  loadPendingCount();
+  showToast("Propuesta rechazada");
+}
+
+document.getElementById("reviewBtn").addEventListener("click",()=>{
+  document.getElementById("reviewModal").hidden=false;
+  document.body.style.overflow="hidden";
+  loadReviewList();
+});
+document.getElementById("reviewCloseBtn").addEventListener("click",()=>{
+  document.getElementById("reviewModal").hidden=true;
+  document.body.style.overflow="";
+});
+document.getElementById("reviewModal").addEventListener("click",e=>{
+  if(e.target===document.getElementById("reviewModal")){
+    document.getElementById("reviewModal").hidden=true;
+    document.body.style.overflow="";
+  }
+});
+
 function init(){
   initTheme();
   initMap();
@@ -2122,8 +2378,8 @@ function init(){
   initGeolocation();
   refreshAuthUI();
   fetchConcerts();
-  setInterval(fetchConcerts,60000);  // refresh datos cada 60s
-  setInterval(render,30000);          // recalcular estados cada 30s
+  setInterval(fetchConcerts,60000);
+  setInterval(render,30000);
 }
 init();
 </script>
