@@ -19,37 +19,51 @@
    VARIABLES — MODO NOCTURNO (default)
 ═══════════════════════════════════════════════ */
 :root{
-  --bg:#09090b;
-  --bg-elevated:#18181b;
-  --bg-card:#1c1c1f;
-  --border:#27272a;
-  --text:#ffffff;
-  --text-dim:#a1a1aa;
-  --text-dimmer:#71717a;
-  --accent:#dc2626;
-  --accent-dim:rgba(220,38,38,.18);
-  --live:#dc2626;
-  --upcoming:#eab308;
-  --finished:#52525b;
-  --radius:14px;
+  --bg:#08081a;
+  --bg-elevated:#11112b;
+  --bg-card:#161630;
+  --border:#2a2a55;
+  --text:#f0f0ff;
+  --text-dim:#a0a0d0;
+  --text-dimmer:#6060a0;
+  --accent:#a855f7;
+  --accent2:#ec4899;
+  --accent-dim:rgba(168,85,247,.18);
+  --live:#f43f5e;
+  --live-dim:rgba(244,63,94,.18);
+  --upcoming:#fbbf24;
+  --upcoming-dim:rgba(251,191,36,.15);
+  --finished:#4a4a7a;
+  --teal:#06b6d4;
+  --orange:#f97316;
+  --radius:16px;
   --maxw:480px;
-  --shadow:0 4px 20px rgba(0,0,0,.4);
+  --shadow:0 8px 32px rgba(0,0,0,.6);
+  --glow-live:0 0 20px rgba(244,63,94,.4);
+  --glow-upcoming:0 0 20px rgba(251,191,36,.3);
+  --glow-accent:0 0 20px rgba(168,85,247,.35);
 }
 
 /* ═══════════════════════════════════════════════
    MODO DIURNO
 ═══════════════════════════════════════════════ */
 body.day-mode{
-  --bg:#f4f3f0;
+  --bg:#f0eeff;
   --bg-elevated:#ffffff;
-  --bg-card:#ffffff;
-  --border:#e4e4e7;
-  --text:#18181b;
-  --text-dim:#52525b;
-  --text-dimmer:#71717a;
-  --accent:#dc2626;
-  --accent-dim:rgba(220,38,38,.12);
+  --bg-card:#faf8ff;
+  --border:#ddd8f5;
+  --text:#1a0a2e;
+  --text-dim:#5a4a7a;
+  --text-dimmer:#9080b0;
+  --accent:#7c3aed;
+  --accent2:#db2777;
+  --accent-dim:rgba(124,58,237,.12);
+  --live:#e11d48;
+  --upcoming:#d97706;
   --shadow:0 4px 20px rgba(0,0,0,.1);
+  --glow-live:none;
+  --glow-upcoming:none;
+  --glow-accent:none;
 }
 
 *{box-sizing:border-box;}
@@ -80,51 +94,80 @@ body{
    HEADER
 ═══════════════════════════════════════════════ */
 header{
-  padding:12px 14px 10px;
+  padding:14px 14px 12px;
   border-bottom:1px solid var(--border);
   position:sticky;top:0;
-  background:var(--bg);
+  background:linear-gradient(135deg,#0d0d22 0%,#110d2e 50%,#0d1a22 100%);
   z-index:30;
+  box-shadow:0 2px 20px rgba(168,85,247,.15);
+}
+body.day-mode header{
+  background:linear-gradient(135deg,#ede9fe 0%,#fce7f3 100%);
+  box-shadow:0 2px 12px rgba(124,58,237,.1);
 }
 header h1{
-  font-size:18px;
-  margin:0 0 10px;
-  display:flex;align-items:center;gap:8px;
-  letter-spacing:.2px;
+  font-size:20px;
+  margin:0 0 12px;
+  display:flex;align-items:center;gap:10px;
+  letter-spacing:-.3px;font-weight:800;
+  background:linear-gradient(90deg,#a855f7,#ec4899,#06b6d4);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+body.day-mode header h1{
+  background:linear-gradient(90deg,#7c3aed,#db2777);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
 header h1 .dot{
-  width:10px;height:10px;border-radius:50%;
-  background:var(--accent);
-  box-shadow:0 0 0 0 rgba(220,38,38,.7);
+  width:12px;height:12px;border-radius:50%;
+  background:var(--live);flex-shrink:0;
+  box-shadow:0 0 0 0 rgba(244,63,94,.7);
   animation:dotpulse 1.8s infinite;
+  -webkit-text-fill-color:initial;
 }
 @keyframes dotpulse{
-  0%{box-shadow:0 0 0 0 rgba(220,38,38,.55);}
-  70%{box-shadow:0 0 0 7px rgba(220,38,38,0);}
-  100%{box-shadow:0 0 0 0 rgba(220,38,38,0);}
+  0%{box-shadow:0 0 0 0 rgba(244,63,94,.7);}
+  70%{box-shadow:0 0 0 9px rgba(244,63,94,0);}
+  100%{box-shadow:0 0 0 0 rgba(244,63,94,0);}
 }
 .controls-row{display:flex;gap:6px;}
 select#regionSelect{
   flex:1;
-  background:var(--bg-elevated);
+  background:rgba(255,255,255,.07);
   color:var(--text);
   border:1px solid var(--border);
-  border-radius:10px;
-  padding:8px 10px;
-  font-size:13px;
+  border-radius:12px;
+  padding:9px 12px;
+  font-size:13px;font-weight:500;
+  backdrop-filter:blur(10px);
 }
+body.day-mode select#regionSelect{background:rgba(255,255,255,.7);}
 button.iconbtn{
-  background:var(--bg-elevated);
+  background:rgba(255,255,255,.07);
   border:1px solid var(--border);
   color:var(--text-dim);
-  border-radius:10px;
-  width:38px;
-  font-size:15px;
+  border-radius:12px;
+  width:42px;height:42px;
+  font-size:16px;
   cursor:pointer;
-  transition:background .15s, color .15s, border-color .15s;
+  transition:all .2s;
+  backdrop-filter:blur(10px);
 }
-button.iconbtn.active{color:var(--accent);border-color:var(--accent);}
-button.iconbtn:hover{background:var(--bg-card);}
+button.iconbtn.active{color:var(--accent);border-color:var(--accent);background:var(--accent-dim);box-shadow:var(--glow-accent);}
+button.iconbtn:hover{background:var(--accent-dim);border-color:var(--accent);color:var(--text);}
+.search-bar{
+  margin-top:8px;
+  background:rgba(255,255,255,.07);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:9px 14px;
+  font-size:13px;color:var(--text);
+  width:100%;
+  backdrop-filter:blur(10px);
+  transition:border-color .2s;
+}
+.search-bar::placeholder{color:var(--text-dimmer);}
+.search-bar:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-dim);}
+body.day-mode .search-bar{background:rgba(255,255,255,.7);}
 
 /* ═══════════════════════════════════════════════
    MAPA
@@ -216,87 +259,119 @@ button.iconbtn:hover{background:var(--bg-card);}
 /* ═══════════════════════════════════════════════
    LISTA DE CONCIERTOS
 ═══════════════════════════════════════════════ */
-main{flex:1;padding:12px 14px 100px;}
+main{flex:1;padding:12px 12px 100px;}
 .section-title{
-  font-size:11px;text-transform:uppercase;letter-spacing:.08em;
-  color:var(--text-dimmer);margin:16px 0 7px;
+  font-size:10px;text-transform:uppercase;letter-spacing:.12em;font-weight:800;
+  color:var(--accent);margin:20px 0 10px;
+  display:flex;align-items:center;gap:8px;
 }
+.section-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent);}
 .empty-state{
-  color:var(--text-dimmer);font-size:14px;text-align:center;
-  padding:30px 10px;border:1px dashed var(--border);border-radius:var(--radius);
+  color:var(--text-dimmer);font-size:15px;text-align:center;
+  padding:48px 20px;border:1px dashed var(--border);border-radius:var(--radius);
+  background:var(--bg-card);
 }
+.empty-state .empty-mascot{font-size:60px;display:block;margin-bottom:12px;}
+/* Tarjetas de concierto — diseño visual */
 .card{
-  background:var(--bg-card);border:1px solid var(--border);
-  border-radius:var(--radius);padding:11px;margin-bottom:9px;
-  display:flex;gap:10px;cursor:pointer;
-  transition:border-color .15s, box-shadow .15s;
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  margin-bottom:12px;
+  cursor:pointer;
+  overflow:hidden;
+  transition:transform .2s, box-shadow .2s, border-color .2s;
+  animation:cardIn .4s ease both;
 }
-.card:hover{border-color:var(--accent);box-shadow:0 2px 12px var(--accent-dim);}
-.card-left{width:54px;height:54px;flex-shrink:0;position:relative;}
-.card img.poster{width:54px;height:54px;border-radius:10px;object-fit:cover;background:var(--bg-elevated);}
-.card-placeholder{
-  width:54px;height:54px;border-radius:10px;
-  background:var(--bg-elevated);
-  display:flex;align-items:center;justify-content:center;
-  font-size:28px;position:relative;overflow:hidden;
+@keyframes cardIn{
+  from{opacity:0;transform:translateY(18px);}
+  to{opacity:1;transform:translateY(0);}
 }
-.card-placeholder.live-ph{background:rgba(220,38,38,.15);}
-.card-placeholder.upcoming-ph{background:rgba(234,179,8,.12);}
-.card-placeholder.finished-ph{background:rgba(82,82,91,.15);}
+.card:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:var(--glow-accent);}
+.card.card-live{border-color:var(--live);box-shadow:var(--glow-live);}
+.card.card-upcoming{border-color:rgba(251,191,36,.35);}
 
+/* Poster hero */
+.card-poster-wrap{position:relative;width:100%;height:160px;overflow:hidden;background:var(--bg-elevated);}
+.card-poster-wrap img.poster{width:100%;height:100%;object-fit:cover;display:block;}
+.card-poster-wrap .poster-placeholder{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:56px;
+}
+.card-poster-wrap .poster-placeholder.live-ph{background:linear-gradient(135deg,#2d0a14,#4a0a1e);}
+.card-poster-wrap .poster-placeholder.upcoming-ph{background:linear-gradient(135deg,#1a1400,#2d2400);}
+.card-poster-wrap .poster-placeholder.finished-ph{background:linear-gradient(135deg,#0f0f1a,#1a1a2e);}
+.poster-gradient{
+  position:absolute;bottom:0;left:0;right:0;height:80px;
+  background:linear-gradient(transparent,var(--bg-card));
+  pointer-events:none;
+}
+.poster-status-badge{
+  position:absolute;top:10px;left:10px;
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:10px;font-weight:800;letter-spacing:.06em;
+  padding:4px 10px;border-radius:20px;backdrop-filter:blur(12px);
+}
+.poster-status-badge.live{background:rgba(244,63,94,.85);color:#fff;box-shadow:0 0 12px rgba(244,63,94,.5);}
+.poster-status-badge.upcoming{background:rgba(251,191,36,.85);color:#000;}
+.poster-status-badge.finished{background:rgba(74,74,122,.7);color:#a0a0d0;}
+.poster-status-badge .bdot{width:5px;height:5px;border-radius:50%;background:currentColor;}
+
+/* Live ring animado sobre poster */
+.live-ring{
+  position:absolute;inset:0;
+  border:2px solid var(--live);
+  animation:live-ring-pulse 1.4s ease-in-out infinite;pointer-events:none;
+}
+@keyframes live-ring-pulse{
+  0%,100%{opacity:.8;}50%{opacity:.2;}
+}
+
+/* Cuerpo de la tarjeta */
+.card-body{padding:11px 13px 12px;}
+.card .info .name{
+  font-size:15px;font-weight:700;margin:0 0 3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;
+}
+.card .info .venue{
+  font-size:12px;color:var(--text-dim);margin:0 0 8px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  display:flex;align-items:center;gap:4px;
+}
+.card-meta-row{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin-bottom:4px;}
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:800;letter-spacing:.04em;
+  padding:3px 9px;border-radius:20px;
+}
+.badge.live{background:var(--live-dim);color:var(--live);}
+.badge.upcoming{background:var(--upcoming-dim);color:var(--upcoming);}
+.badge.finished{background:rgba(74,74,122,.25);color:var(--text-dimmer);}
+.badge .bdot{width:5px;height:5px;border-radius:50%;background:currentColor;}
+.distance{font-size:11px;color:var(--text-dimmer);}
+.travel-time{font-size:11px;color:var(--text-dimmer);}
+.card-countdown{font-size:11.5px;color:var(--upcoming);font-weight:700;margin-top:3px;}
+.card-price{
+  font-size:11px;font-weight:700;
+  background:rgba(249,115,22,.15);color:var(--orange);
+  border-radius:8px;padding:2px 8px;display:inline-block;margin-top:3px;
+}
+.card-stars{display:flex;gap:1px;margin-top:5px;}
+.card-stars .s{font-size:14px;cursor:pointer;user-select:none;transition:transform .1s;}
+.card-stars .s:hover{transform:scale(1.3);}
+.card-admin-row{display:flex;gap:5px;margin-top:7px;}
+.card-edit-btn{font-size:11px;padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-elevated);color:var(--text-dim);cursor:pointer;transition:all .15s;}
+.card-edit-btn:hover{border-color:var(--accent);color:var(--accent);}
+.card-del-btn{font-size:11px;padding:4px 8px;border-radius:8px;border:1px solid rgba(244,63,94,.3);background:rgba(244,63,94,.08);color:var(--live);cursor:pointer;transition:all .15s;}
+.card-del-btn:hover{background:rgba(244,63,94,.2);}
 /* Mascot animations */
 .mascot-emoji{display:inline-block;}
 .mascot-emoji.live-anim{animation:mascot-dance .45s ease-in-out infinite alternate;}
 .mascot-emoji.upcoming-anim{animation:mascot-bounce .75s ease-in-out infinite;}
-.mascot-emoji.finished-anim{opacity:.55;}
-@keyframes mascot-dance{
-  from{transform:rotate(-14deg) scale(1);}
-  to{transform:rotate(14deg) scale(1.12);}
-}
-@keyframes mascot-bounce{
-  0%,100%{transform:translateY(0);}
-  50%{transform:translateY(-7px);}
-}
-
-/* Live pulse ring on poster */
-.live-ring{
-  position:absolute;inset:-3px;border-radius:13px;
-  border:2px solid var(--accent);
-  animation:live-ring-pulse 1.4s ease-in-out infinite;
-}
-@keyframes live-ring-pulse{
-  0%,100%{opacity:.9;transform:scale(1);}
-  50%{opacity:.3;transform:scale(1.04);}
-}
-
-.card .info{flex:1;min-width:0;}
-.card .info .name{
-  font-size:14px;font-weight:600;margin:0 0 2px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.card .info .venue{
-  font-size:12px;color:var(--text-dim);margin:0 0 5px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.card-meta-row{display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-bottom:3px;}
-.badge{
-  display:inline-flex;align-items:center;gap:4px;
-  font-size:10px;font-weight:700;letter-spacing:.04em;
-  padding:2px 7px;border-radius:20px;
-}
-.badge.live{background:var(--accent-dim);color:#ff6b6b;}
-.badge.upcoming{background:rgba(234,179,8,.15);color:var(--upcoming);}
-.badge.finished{background:rgba(82,82,91,.25);color:var(--text-dimmer);}
-.badge .bdot{width:5px;height:5px;border-radius:50%;background:currentColor;}
-.distance{font-size:11px;color:var(--text-dimmer);}
-.travel-time{font-size:11px;color:var(--text-dimmer);}
-.card-countdown{font-size:11px;color:var(--upcoming);font-weight:600;margin-top:2px;}
-.card-price{font-size:10.5px;color:#d97706;font-weight:600;}
-.card-stars{display:flex;gap:1px;margin-top:3px;}
-.card-stars .s{font-size:13px;cursor:pointer;user-select:none;}
-.card-admin-row{display:flex;gap:5px;margin-top:5px;}
-.card-edit-btn{font-size:11px;padding:3px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg-elevated);color:var(--text-dim);cursor:pointer;}
-.card-del-btn{font-size:11px;padding:3px 7px;border-radius:6px;border:1px solid #7f1d1d;background:rgba(220,38,38,.1);color:#f87171;cursor:pointer;}
+.mascot-emoji.finished-anim{opacity:.45;}
+@keyframes mascot-dance{from{transform:rotate(-14deg) scale(1);}to{transform:rotate(14deg) scale(1.12);}}
+@keyframes cardIn{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
 
 /* ═══════════════════════════════════════════════
    FAB
@@ -310,11 +385,16 @@ footer.fab-wrap{
 footer.fab-wrap .inner{width:100%;max-width:var(--maxw);display:flex;justify-content:flex-end;padding:0 16px;}
 #addBtn{
   pointer-events:auto;
-  background:var(--accent);color:#fff;border:none;
-  width:54px;height:54px;border-radius:50%;
-  font-size:26px;font-weight:300;
-  box-shadow:0 6px 18px rgba(220,38,38,.45);cursor:pointer;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;border:none;
+  width:58px;height:58px;border-radius:50%;
+  font-size:28px;font-weight:300;
+  box-shadow:0 6px 24px rgba(168,85,247,.5), var(--glow-accent);
+  cursor:pointer;
+  transition:transform .2s, box-shadow .2s;
 }
+#addBtn:hover{transform:scale(1.1);}
+#addBtn:active{transform:scale(.95);}
 
 /* ═══════════════════════════════════════════════
    MODALES
@@ -456,6 +536,7 @@ footer.fab-wrap .inner{width:100%;max-width:var(--maxw);display:flex;justify-con
       <button class="iconbtn" id="locateBtn" title="Centrar en mi ubicación">📍</button>
       <button class="iconbtn" id="loginBtn" title="Iniciar sesión (solo admin)">🔑</button>
     </div>
+    <input type="search" id="searchBar" class="search-bar" placeholder="🔍 Buscar artista o recinto..." autocomplete="off" />
   </header>
 
   <!-- MAPA -->
@@ -1042,14 +1123,16 @@ function renderMap(){
 
 function renderList(){
   const container=document.getElementById("listContainer");
-  const items=getVisible();
+  const searchVal=normalize((document.getElementById("searchBar")||{value:""}).value||"");
+  let items=getVisible();
+  if(searchVal.length>1) items=items.filter(({c})=>normalize(c.name).includes(searchVal)||normalize(c.venue).includes(searchVal));
   if(items.length===0){
-    container.innerHTML=`<div class="empty-state">No hay conciertos cargados todavía para esta región.<br>Toca el botón <strong>+</strong> para agregar el primero.</div>`;
+    container.innerHTML=`<div class="empty-state"><span class="empty-mascot">🐱</span>No hay conciertos para esta región.<br><small>Prueba con otra región o agrega uno con el botón +</small></div>`;
     return;
   }
-  const labels={en_vivo:"En vivo ahora 🔴",proximamente:"Próximamente 🟡",finalizado:"Finalizado ⚪"};
+  const labels={en_vivo:"🔴 En vivo ahora",proximamente:"🟡 Próximamente",finalizado:"⚪ Finalizado"};
   let lastGroup=null, html="";
-  items.forEach(({c,status,dist})=>{
+  items.forEach(({c,status,dist},idx)=>{
     if(status!==lastGroup){
       html+=`<div class="section-title">${labels[status]}</div>`;
       lastGroup=status;
@@ -1060,32 +1143,35 @@ function renderList(){
     const countdown=status==="proximamente"?countdownLabel(c.starts_at):null;
     const rating=getRating(c.id);
     const stars=Array.from({length:5},(_,i)=>`<span class="s" data-id="${c.id}" data-val="${i+1}">${i<rating?"⭐":"☆"}</span>`).join("");
+    const cardCls=status==="en_vivo"?"card card-live":status==="proximamente"?"card card-upcoming":"card card-finished";
+    const delay=(idx%10)*0.05;
 
     html+=`
-      <div class="card" data-lat="${c.lat}" data-lng="${c.lng}" data-cid="${c.id}">
-        <div class="card-left">
+      <div class="${cardCls}" data-lat="${c.lat}" data-lng="${c.lng}" data-cid="${c.id}" style="animation-delay:${delay}s">
+        <div class="card-poster-wrap">
           ${c.poster_url
-            ?`<img class="poster" src="${escapeHtml(c.poster_url)}" alt=""
+            ?`<img class="poster" src="${escapeHtml(c.poster_url)}" alt="${escapeHtml(c.name)}"
                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-              <div class="card-placeholder ${phClass}" style="display:none">
-                <span class="mascot-emoji ${mascotClass}">${MASCOTS[status]}</span>
-                ${hasRing?'<span class="live-ring"></span>':""}
+              <div class="poster-placeholder ${phClass}" style="display:none">
+                <span class="mascot-emoji ${mascotClass}" style="font-size:56px">${MASCOTS[status]}</span>
               </div>`
-            :`<div class="card-placeholder ${phClass}">
-                <span class="mascot-emoji ${mascotClass}">${MASCOTS[status]}</span>
-                ${hasRing?'<span class="live-ring"></span>':""}
+            :`<div class="poster-placeholder ${phClass}">
+                <span class="mascot-emoji ${mascotClass}" style="font-size:56px">${MASCOTS[status]}</span>
               </div>`}
+          <div class="poster-gradient"></div>
+          <span class="poster-status-badge ${statusClass(status)}">
+            <span class="bdot"></span>${statusLabel(status)}
+          </span>
+          ${hasRing?'<div class="live-ring"></div>':""}
         </div>
-        <div class="info">
+        <div class="card-body info">
           <p class="name">${escapeHtml(c.name)}</p>
-          <p class="venue">${escapeHtml(c.venue)}</p>
+          <p class="venue">📍 ${escapeHtml(c.venue)}${dist!=null?` · ${distanceLabel(dist)}`:""}</p>
           <div class="card-meta-row">
-            <span class="badge ${statusClass(status)}"><span class="bdot"></span>${statusLabel(status)}</span>
-            ${dist!=null?`<span class="distance">📍 ${distanceLabel(dist)}</span>`:""}
-            ${dist!=null?`<span class="travel-time">· ${travelTimeLabel(dist)}</span>`:""}
+            ${countdown?`<span class="card-countdown">⏳ ${countdown}</span>`:""}
+            ${c.price_note?`<span class="card-price">💰 ${escapeHtml(c.price_note)}</span>`:""}
+            ${!countdown&&!c.price_note?`<span style="font-size:11px;color:var(--text-dimmer)">${formatDateTime(c.starts_at)}</span>`:""}
           </div>
-          ${countdown?`<div class="card-countdown">⏳ ${countdown}</div>`:""}
-          ${c.price_note?`<div class="card-price">💰 ${escapeHtml(c.price_note)}</div>`:""}
           <div class="card-stars" data-id="${c.id}">${stars}</div>
           ${currentSession?`
           <div class="card-admin-row">
@@ -1185,6 +1271,7 @@ function initRegionSelect(){
     +REGIONS.map(r=>`<option value="${r.key}">${r.label}</option>`).join("");
   sel.value="todas";
   sel.addEventListener("change",()=>{ selectedRegion=sel.value;render(); });
+  document.getElementById("searchBar").addEventListener("input",()=>renderList());
 
   const fc=document.getElementById("f_city");
   fc.innerHTML=REGIONS.map(r=>`<option value="${r.aliases[0]}">${r.label} — ${r.aliases[0]}</option>`).join("");
