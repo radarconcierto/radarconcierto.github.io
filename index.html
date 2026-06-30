@@ -800,9 +800,6 @@ footer.fab-wrap .inner{width:100%;max-width:var(--maxw);display:flex;justify-con
     <div id="listContainer"></div>
   </main>
 
-  <!-- FAB PÚBLICO: proponer evento -->
-  <button id="submitEventFab" title="Proponer un evento">✚ Proponer evento</button>
-
   <!-- FAB ADMIN -->
   <footer class="fab-wrap" id="fabWrap" hidden>
     <div class="inner" style="display:flex;gap:8px;align-items:center">
@@ -2230,15 +2227,13 @@ document.getElementById("concertDayCloseBtn").addEventListener("click",()=>{
 /* ═══════════════════════════════════════════════
    INICIO
 ═══════════════════════════════════════════════ */
-/* ═══ PROPONER EVENTO (público) ═══ */
+/* ═══ PROPONER EVENTO (desactivado — sistema automático) ═══ */
 (function(){
-  const fab=document.getElementById("submitEventFab");
   const modal=document.getElementById("submitModal");
   const closeBtn=document.getElementById("submitCloseBtn");
   const form=document.getElementById("submitEventForm");
   const citySelect=document.getElementById("se_city");
 
-  // Poblar ciudades
   REGIONS.forEach(r=>{
     r.aliases.forEach(a=>{
       const opt=document.createElement("option");
@@ -2246,11 +2241,6 @@ document.getElementById("concertDayCloseBtn").addEventListener("click",()=>{
       opt.textContent=r.label+" — "+a;
       citySelect.appendChild(opt);
     });
-  });
-
-  fab.addEventListener("click",()=>{
-    modal.hidden=false;
-    document.body.style.overflow="hidden";
   });
   const close=()=>{ modal.hidden=true; document.body.style.overflow=""; };
   closeBtn.addEventListener("click",close);
