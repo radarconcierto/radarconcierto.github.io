@@ -131,6 +131,24 @@ function addHours(iso:string, h:number):string {
   return new Date(new Date(iso).getTime()+h*3600000).toISOString();
 }
 
+const HOME_URLS=[
+  /^https?:\/\/www\.puntoticket\.com\/?$/,
+  /^https?:\/\/www\.puntoticket\.com\/categoria/,
+  /^https?:\/\/www\.eventbrite\.cl\/d\//,
+  /^https?:\/\/www\.eventbrite\.cl\/?$/,
+  /^https?:\/\/passline\.com\/eventos?\/?$/,
+  /^https?:\/\/passline\.com\/?$/,
+  /^https?:\/\/www\.portalticket\.cl\/?$/,
+  /^https?:\/\/www\.portalticket\.cl\/eventos?\/?$/,
+  /^https?:\/\/www\.portalticket\.cl\/conciertos?\/?$/,
+  /^https?:\/\/www\.portalticket\.cl\/musica\/?$/,
+];
+function validEventUrl(url:string):string {
+  if(!url) return "";
+  if(HOME_URLS.some(p=>p.test(url))) return "";
+  return url;
+}
+
 function extractJsonLD(html:string):any[] {
   const out:any[]=[];
   const re=/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
@@ -189,7 +207,7 @@ async function scrapePuntoTicket():Promise<Concert[]> {
           name:ev.name, venue:venueName, city,
           address:ev.location?.address?.streetAddress||null,
           lat, lng, starts_at:startsAt, ends_at:ev.endDate||addHours(startsAt,3),
-          ticket_url:ev.url||url, price_note:null,
+          ticket_url:validEventUrl(ev.url||""), price_note:null,
           poster_url:typeof img==="string"?img:img?.url||null,
           created_by:"puntoticket_auto",
         });
@@ -214,7 +232,7 @@ async function scrapePuntoTicket():Promise<Concert[]> {
         name, venue:locationText||"Por confirmar", city,
         address:null, lat, lng,
         starts_at:startsAt, ends_at:addHours(startsAt,3),
-        ticket_url:ticketUrl, price_note:null,
+        ticket_url:validEventUrl(ticketUrl), price_note:null,
         poster_url:img?.startsWith("http")?img:null,
         created_by:"puntoticket_auto",
       });
@@ -263,7 +281,7 @@ async function scrapeEventbrite():Promise<Concert[]> {
           name:ev.name, venue:venueName, city,
           address:ev.location?.address?.streetAddress||null,
           lat, lng, starts_at:startsAt, ends_at:endsAt,
-          ticket_url:ev.url||url,
+          ticket_url:validEventUrl(ev.url||""),
           price_note:null,
           poster_url:typeof img==="string"?img:img?.url||null,
           created_by:"eventbrite_auto",
@@ -291,7 +309,7 @@ async function scrapeEventbrite():Promise<Concert[]> {
           name, venue:locationText||"Por confirmar", city,
           address:null, lat, lng,
           starts_at:startsAt, ends_at:addHours(startsAt,3),
-          ticket_url:ticketUrl, price_note:null,
+          ticket_url:validEventUrl(ticketUrl), price_note:null,
           poster_url:img?.startsWith("http")?img:null,
           created_by:"eventbrite_auto",
         });
@@ -338,7 +356,7 @@ async function scrapePassline():Promise<Concert[]> {
           name:ev.name, venue:venueName, city,
           address:ev.location?.address?.streetAddress||null,
           lat, lng, starts_at:startsAt, ends_at:ev.endDate||addHours(startsAt,3),
-          ticket_url:ev.url||url, price_note:null,
+          ticket_url:validEventUrl(ev.url||""), price_note:null,
           poster_url:typeof img==="string"?img:img?.url||null,
           created_by:"passline_auto",
         });
@@ -364,7 +382,7 @@ async function scrapePassline():Promise<Concert[]> {
         name, venue:locationText||"Por confirmar", city,
         address:null, lat, lng,
         starts_at:startsAt, ends_at:addHours(startsAt,3),
-        ticket_url:ticketUrl, price_note:null,
+        ticket_url:validEventUrl(ticketUrl), price_note:null,
         poster_url:img?.startsWith("http")?img:null,
         created_by:"passline_auto",
       });
@@ -409,7 +427,7 @@ async function scrapePortalTicket():Promise<Concert[]> {
           name:ev.name, venue:venueName, city,
           address:ev.location?.address?.streetAddress||null,
           lat, lng, starts_at:startsAt, ends_at:ev.endDate||addHours(startsAt,3),
-          ticket_url:ev.url||url, price_note:null,
+          ticket_url:validEventUrl(ev.url||""), price_note:null,
           poster_url:typeof img==="string"?img:img?.url||null,
           created_by:"portalticket_auto",
         });
@@ -440,7 +458,7 @@ async function scrapePortalTicket():Promise<Concert[]> {
         name, venue:locationText||"Por confirmar", city,
         address:null, lat, lng,
         starts_at:startsAt, ends_at:addHours(startsAt,3),
-        ticket_url:ticketUrl, price_note:null,
+        ticket_url:validEventUrl(ticketUrl), price_note:null,
         poster_url:img?.startsWith("http")?img:null,
         created_by:"portalticket_auto",
       });

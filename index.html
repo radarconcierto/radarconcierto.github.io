@@ -1489,7 +1489,7 @@ function popupHtml(c,status,distKm){
       </button>
 
       <div class="pop-actions" style="margin-top:8px;">
-        <a class="buy" href="${escapeHtml(c.ticket_url)}" target="_blank" rel="noopener">🎟️ Comprar entradas</a>
+        ${c.ticket_url?`<a class="buy" href="${escapeHtml(c.ticket_url)}" target="_blank" rel="noopener">🎟️ Comprar entradas</a>`:''}
       </div>
     </div>
   `;
@@ -1682,8 +1682,7 @@ function renderList(){
           </div>
           <div class="card-stars" data-id="${c.id}">${stars}</div>
           <button class="btn-plan" data-cid="${c.id}">📅 Planificar mi salida</button>
-          <a href="${escapeHtml(c.ticket_url)}" target="_blank" rel="noopener"
-            class="buy-btn" onclick="launchConfetti(this)">🎟 Comprar entradas</a>
+          ${c.ticket_url?`<a href="${escapeHtml(c.ticket_url)}" target="_blank" rel="noopener" class="buy-btn" onclick="launchConfetti(this)">🎟 Comprar entradas</a>`:'<span class="buy-btn" style="opacity:.4;cursor:default;pointer-events:none">🎟 Entradas próximamente</span>'}
           ${currentSession?`
           <div class="card-admin-row">
             <button class="card-edit-btn" data-cid="${c.id}">✏️ Editar</button>
@@ -2184,7 +2183,7 @@ async function openConcertDay(c){
 
     <p class="cday-sep">🎟 Tu entrada</p>
     <div class="cday-links">
-      <a class="cday-link buy full" href="${escapeHtml(c.ticket_url)}" target="_blank" rel="noopener">🎟 Comprar entradas</a>
+      ${c.ticket_url?`<a class="cday-link buy full" href="${escapeHtml(c.ticket_url)}" target="_blank" rel="noopener">🎟 Comprar entradas</a>`:'<span class="cday-link full" style="opacity:.4;cursor:default">🎟 Link de entradas no disponible</span>'}
     </div>
   `;
 
