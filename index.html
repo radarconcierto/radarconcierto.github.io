@@ -360,6 +360,17 @@ main{flex:1;padding:12px 12px 100px;}
 .card-stars{display:flex;gap:1px;margin-top:5px;}
 .card-stars .s{font-size:14px;cursor:pointer;user-select:none;transition:transform .1s;}
 .card-stars .s:hover{transform:scale(1.3);}
+.buy-btn{
+  display:block;margin-top:10px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;text-decoration:none;text-align:center;
+  font-size:13px;font-weight:800;letter-spacing:.03em;
+  padding:11px;border-radius:12px;
+  transition:transform .15s, opacity .15s;
+  box-shadow:0 4px 16px rgba(168,85,247,.35);
+}
+.buy-btn:hover{opacity:.9;transform:translateY(-1px);}
+.buy-btn:active{transform:scale(.97);}
 .card-admin-row{display:flex;gap:5px;margin-top:7px;}
 .card-edit-btn{font-size:11px;padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-elevated);color:var(--text-dim);cursor:pointer;transition:all .15s;}
 .card-edit-btn:hover{border-color:var(--accent);color:var(--accent);}
@@ -371,7 +382,67 @@ main{flex:1;padding:12px 12px 100px;}
 .mascot-emoji.upcoming-anim{animation:mascot-bounce .75s ease-in-out infinite;}
 .mascot-emoji.finished-anim{opacity:.45;}
 @keyframes mascot-dance{from{transform:rotate(-14deg) scale(1);}to{transform:rotate(14deg) scale(1.12);}}
+@keyframes mascot-bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
 @keyframes cardIn{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+
+/* Mascota Radar */
+.radar-greeting{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 14px 10px;
+  background:linear-gradient(135deg,rgba(168,85,247,.08),rgba(236,72,153,.06));
+  border-bottom:1px solid var(--border);
+}
+.radar-cat{width:56px;height:56px;flex-shrink:0;animation:radar-float 3s ease-in-out infinite;}
+@keyframes radar-float{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+.radar-greeting-text h2{margin:0 0 2px;font-size:16px;font-weight:800;
+  background:linear-gradient(90deg,#a855f7,#ec4899);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.radar-greeting-text p{margin:0;font-size:12px;color:var(--text-dim);}
+
+/* Género tag */
+.genre-tag{
+  font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;
+  margin-left:auto;flex-shrink:0;
+}
+.genre-rock{background:rgba(244,63,94,.15);color:#f43f5e;}
+.genre-pop{background:rgba(236,72,153,.15);color:#ec4899;}
+.genre-electronica{background:rgba(6,182,212,.15);color:#06b6d4;}
+.genre-jazz{background:rgba(251,191,36,.15);color:#fbbf24;}
+.genre-clasica{background:rgba(139,92,246,.15);color:#8b5cf6;}
+.genre-hip{background:rgba(132,204,22,.15);color:#84cc16;}
+.genre-metal{background:rgba(82,82,91,.3);color:#a0a0d0;}
+.genre-otro{background:rgba(168,85,247,.1);color:#a855f7;}
+
+/* Confetti */
+.confetti-piece{
+  position:fixed;width:8px;height:8px;border-radius:2px;
+  animation:confettiFall 1.2s ease-in forwards;
+  pointer-events:none;z-index:999;
+}
+@keyframes confettiFall{
+  0%{transform:translateY(-10px) rotate(0);opacity:1;}
+  100%{transform:translateY(100vh) rotate(720deg);opacity:0;}
+}
+
+/* Star burst al valorar */
+@keyframes starBurst{
+  0%{transform:scale(1);}
+  50%{transform:scale(1.8);}
+  100%{transform:scale(1);}
+}
+.star-burst{animation:starBurst .3s ease-out;}
+
+/* Vinilo spinning en header */
+.vinyl{
+  width:28px;height:28px;border-radius:50%;
+  background:conic-gradient(#1a0a2e,#2d1a4a,#1a0a2e,#2d1a4a,#1a0a2e);
+  border:2px solid var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  animation:vinyl-spin 4s linear infinite;
+  flex-shrink:0;
+}
+@keyframes vinyl-spin{from{transform:rotate(0);}to{transform:rotate(360deg);}}
+.vinyl::after{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);}
 
 /* ═══════════════════════════════════════════════
    FAB
@@ -541,6 +612,36 @@ footer.fab-wrap .inner{width:100%;max-width:var(--maxw);display:flex;justify-con
 
   <!-- MAPA -->
   <div id="map"></div>
+
+  <!-- SALUDO RADAR -->
+  <div class="radar-greeting" id="radarGreeting">
+    <svg class="radar-cat" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="40" cy="52" rx="22" ry="26" fill="#0f0f1a"/>
+      <ellipse cx="40" cy="32" rx="22" ry="21" fill="#0f0f1a"/>
+      <polygon points="22,18 14,3 30,14" fill="#0f0f1a"/>
+      <polygon points="58,18 66,3 50,14" fill="#0f0f1a"/>
+      <polygon points="23,16 17,6 29,14" fill="#ec4899" opacity=".7"/>
+      <polygon points="57,16 63,6 51,14" fill="#a855f7" opacity=".7"/>
+      <ellipse cx="31" cy="30" rx="6" ry="5" fill="#a855f7"/>
+      <ellipse cx="49" cy="30" rx="6" ry="5" fill="#a855f7"/>
+      <ellipse cx="31" cy="31" rx="2" ry="4" fill="#0a0015"/>
+      <ellipse cx="49" cy="31" rx="2" ry="4" fill="#0a0015"/>
+      <circle cx="33" cy="28" r="1.5" fill="white" opacity=".8"/>
+      <circle cx="51" cy="28" r="1.5" fill="white" opacity=".8"/>
+      <polygon points="40,39 37,43 43,43" fill="#ec4899"/>
+      <path d="M35,45 Q40,49 45,45" stroke="#ec4899" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <line x1="18" y1="37" x2="31" y2="35" stroke="#a855f7" stroke-width=".8" opacity=".8"/>
+      <line x1="62" y1="37" x2="49" y2="35" stroke="#ec4899" stroke-width=".8" opacity=".8"/>
+      <path d="M18,26 Q18,10 40,10 Q62,10 62,26" stroke="#06b6d4" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <rect x="9" y="24" width="11" height="16" rx="5" fill="#1a0a2e" stroke="#06b6d4" stroke-width="1.5"/>
+      <rect x="60" y="24" width="11" height="16" rx="5" fill="#1a0a2e" stroke="#06b6d4" stroke-width="1.5"/>
+    </svg>
+    <div class="radar-greeting-text">
+      <h2>¡Hola! Soy Radar 🎧</h2>
+      <p>¿Qué concierto buscamos hoy?</p>
+    </div>
+    <div class="vinyl"></div>
+  </div>
 
   <!-- LISTA -->
   <main>
@@ -845,11 +946,43 @@ function attachStarListeners(container){
     el.addEventListener("click",()=>{
       const id=el.dataset.id, val=parseInt(el.dataset.val);
       setRating(id,val);
+      el.classList.add("star-burst");
+      setTimeout(()=>el.classList.remove("star-burst"),300);
+      if(val===5) launchConfetti(el);
       render();
-      showToast(val===5?"⭐ ¡5 estrellas! Gracias por calificar":
-                val>=3?"⭐ Calificación guardada":"✓ Calificado");
+      showToast(val===5?"⭐⭐⭐⭐⭐ ¡5 estrellas!":val>=3?"⭐ Calificación guardada":"✓ Calificado");
     });
   });
+}
+
+function launchConfetti(origin){
+  const colors=["#a855f7","#ec4899","#06b6d4","#fbbf24","#f43f5e","#84cc16"];
+  const rect=origin?.getBoundingClientRect()||{left:window.innerWidth/2,top:window.innerHeight/2};
+  for(let i=0;i<30;i++){
+    const el=document.createElement("div");
+    el.className="confetti-piece";
+    el.style.cssText=`left:${rect.left+Math.random()*40-20}px;top:${rect.top}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      animation-delay:${Math.random()*.4}s;
+      animation-duration:${.8+Math.random()*.6}s;
+      transform:rotate(${Math.random()*360}deg);
+      width:${4+Math.random()*8}px;height:${4+Math.random()*8}px;`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),1500);
+  }
+}
+
+function extractGenre(venue){
+  const n=normalize(venue||"");
+  if(n.includes("rock")||n.includes("metal")||n.includes("punk")) return {label:"Rock",cls:"genre-rock"};
+  if(n.includes("pop")||n.includes("indie")) return {label:"Pop",cls:"genre-pop"};
+  if(n.includes("electr")||n.includes("techno")||n.includes("trance")) return {label:"Electrónica",cls:"genre-electronica"};
+  if(n.includes("jazz")||n.includes("blues")||n.includes("soul")) return {label:"Jazz",cls:"genre-jazz"};
+  if(n.includes("clasic")||n.includes("opera")||n.includes("sinf")) return {label:"Clásica",cls:"genre-clasica"};
+  if(n.includes("hip")||n.includes("rap")||n.includes("urbano")||n.includes("trap")) return {label:"Hip-Hop",cls:"genre-hip"};
+  if(n.includes("bachata")||n.includes("salsa")||n.includes("cumbia")||n.includes("regga")) return {label:"Latino",cls:"genre-pop"};
+  if(n.includes("fest")||n.includes("festival")) return {label:"Festival",cls:"genre-electronica"};
+  return null;
 }
 
 /* ═══════════════════════════════════════════════
@@ -1145,6 +1278,7 @@ function renderList(){
     const stars=Array.from({length:5},(_,i)=>`<span class="s" data-id="${c.id}" data-val="${i+1}">${i<rating?"⭐":"☆"}</span>`).join("");
     const cardCls=status==="en_vivo"?"card card-live":status==="proximamente"?"card card-upcoming":"card card-finished";
     const delay=(idx%10)*0.05;
+    const genre=extractGenre(c.venue);
 
     html+=`
       <div class="${cardCls}" data-lat="${c.lat}" data-lng="${c.lng}" data-cid="${c.id}" style="animation-delay:${delay}s">
@@ -1162,17 +1296,20 @@ function renderList(){
           <span class="poster-status-badge ${statusClass(status)}">
             <span class="bdot"></span>${statusLabel(status)}
           </span>
+          ${genre?`<span class="genre-tag ${genre.cls}" style="position:absolute;top:10px;right:10px">${genre.label}</span>`:""}
           ${hasRing?'<div class="live-ring"></div>':""}
         </div>
         <div class="card-body info">
           <p class="name">${escapeHtml(c.name)}</p>
-          <p class="venue">📍 ${escapeHtml(c.venue)}${dist!=null?` · ${distanceLabel(dist)}`:""}</p>
+          <p class="venue">📍 ${escapeHtml(c.venue.split(" - ")[0])}${dist!=null?` · ${distanceLabel(dist)}`:""}</p>
           <div class="card-meta-row">
             ${countdown?`<span class="card-countdown">⏳ ${countdown}</span>`:""}
             ${c.price_note?`<span class="card-price">💰 ${escapeHtml(c.price_note)}</span>`:""}
             ${!countdown&&!c.price_note?`<span style="font-size:11px;color:var(--text-dimmer)">${formatDateTime(c.starts_at)}</span>`:""}
           </div>
           <div class="card-stars" data-id="${c.id}">${stars}</div>
+          <a href="${escapeHtml(c.ticket_url)}" target="_blank" rel="noopener"
+            class="buy-btn" onclick="launchConfetti(this)">🎟 Comprar entradas</a>
           ${currentSession?`
           <div class="card-admin-row">
             <button class="card-edit-btn" data-cid="${c.id}">✏️ Editar</button>
