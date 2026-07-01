@@ -715,6 +715,21 @@ footer.fab-wrap .inner{width:100%;max-width:var(--maxw);display:flex;justify-con
 }
 .toast[hidden]{display:none;}
 
+/* ═══ MODAL AYUDA INSTALACIÓN ═══ */
+#helpInstallModal{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:55;display:flex;align-items:flex-end;justify-content:center;}
+#helpInstallModal[hidden]{display:none;}
+.help-sheet{width:100%;max-width:var(--maxw);background:var(--bg-elevated);border-radius:24px 24px 0 0;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;animation:slide-up .32s cubic-bezier(.22,1,.36,1);}
+.help-os-tabs{display:flex;gap:8px;margin-bottom:20px;}
+.help-os-tab{flex:1;padding:10px;border-radius:12px;border:1px solid var(--border);background:var(--bg-card);font-size:13px;font-weight:700;color:var(--text-dim);cursor:pointer;transition:all .15s;text-align:center;}
+.help-os-tab.active{background:linear-gradient(135deg,rgba(168,85,247,.2),rgba(236,72,153,.1));border-color:var(--accent);color:var(--text);}
+.help-steps{display:flex;flex-direction:column;gap:14px;margin-bottom:24px;}
+.help-step{display:flex;align-items:flex-start;gap:14px;background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:14px;}
+.help-step-num{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:14px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.help-step-text{flex:1;}
+.help-step-title{font-size:13px;font-weight:700;margin:0 0 3px;color:var(--text);}
+.help-step-desc{font-size:12px;color:var(--text-dim);margin:0;line-height:1.5;}
+.help-note{background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:12px;padding:12px 14px;font-size:12px;color:var(--text-dim);line-height:1.5;text-align:center;}
+
 /* ═══ DÍA DEL CONCIERTO ═══ */
 #concertDayModal{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:55;display:flex;align-items:flex-end;justify-content:center;}
 #concertDayModal[hidden]{display:none;}
@@ -862,6 +877,7 @@ footer.fab-wrap .inner{width:100%;max-width:var(--maxw);display:flex;justify-con
       <button class="iconbtn" id="notifBtn" title="Activar notificaciones">🔔</button>
       <button class="iconbtn" id="locateBtn" title="Centrar en mi ubicación">📍</button>
       <button class="iconbtn" id="statsBtn" title="Estadísticas" hidden>📊</button>
+      <button class="iconbtn" id="helpInstallBtn" title="¿Cómo instalar la app?">📲</button>
       <button class="iconbtn" id="loginBtn" title="Iniciar sesión (solo admin)">🔑</button>
     </div>
     <input type="search" id="searchBar" class="search-bar" placeholder="🔍 Buscar artista o recinto..." autocomplete="off" />
@@ -1101,6 +1117,18 @@ footer.fab-wrap .inner{width:100%;max-width:var(--maxw);display:flex;justify-con
   </div>
 
   <!-- MODAL: DÍA DEL CONCIERTO -->
+  <!-- MODAL AYUDA INSTALACIÓN -->
+  <div id="helpInstallModal" hidden>
+    <div class="help-sheet">
+      <div class="cday-handle"></div>
+      <div class="cday-top-bar">
+        <span class="cday-top-label">📲 Instalar Radar de Conciertos</span>
+        <button class="cday-close" id="helpInstallCloseBtn">×</button>
+      </div>
+      <div id="helpInstallBody" style="padding:16px 20px 40px"></div>
+    </div>
+  </div>
+
   <div id="concertDayModal" hidden>
     <div class="cday-sheet">
       <div class="cday-handle"></div>
@@ -2522,6 +2550,69 @@ document.getElementById("concertDayCloseBtn").addEventListener("click",()=>{
 /* ═══════════════════════════════════════════════
    INICIO
 ═══════════════════════════════════════════════ */
+/* ═══ AYUDA DE INSTALACIÓN ═══ */
+(function(){
+  const modal=document.getElementById('helpInstallModal');
+  const body=document.getElementById('helpInstallBody');
+  const closeBtn=document.getElementById('helpInstallCloseBtn');
+  const btn=document.getElementById('helpInstallBtn');
+
+  const stepsIOS=[
+    {title:'Abre en Safari',desc:'Esta app solo se puede instalar desde Safari. Si estás en Chrome u otro navegador, cópiala y pégala en Safari.'},
+    {title:'Toca el botón Compartir ⬆️',desc:'Es el ícono con una flecha hacia arriba que aparece en la barra inferior de Safari.'},
+    {title:'Toca "Añadir a pantalla de inicio"',desc:'Baja en el menú hasta encontrar esta opción y tócala.'},
+    {title:'Toca "Añadir"',desc:'Confirma y listo — el ícono de Radar aparecerá en tu pantalla de inicio como una app normal. 🎸'},
+  ];
+  const stepsAndroid=[
+    {title:'Abre en Chrome',desc:'Esta app se instala desde Chrome. Si estás en otro navegador, copia el link y pégalo en Chrome.'},
+    {title:'Toca los 3 puntos ⋮',desc:'Están arriba a la derecha de la pantalla de Chrome.'},
+    {title:'Toca "Agregar a pantalla de inicio"',desc:'Aparece en el menú desplegable. En algunos Android puede decir "Instalar app".'},
+    {title:'Toca "Agregar"',desc:'Confirma y listo — Radar queda instalado en tu celular. 🎸'},
+  ];
+
+  function renderSteps(steps){
+    return steps.map((s,i)=>`
+      <div class="help-step">
+        <div class="help-step-num">${i+1}</div>
+        <div class="help-step-text">
+          <p class="help-step-title">${s.title}</p>
+          <p class="help-step-desc">${s.desc}</p>
+        </div>
+      </div>`).join('');
+  }
+
+  function openHelp(os){
+    const isIos=os==='ios';
+    body.innerHTML=`
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px;line-height:1.5;">
+        Radar de Conciertos se instala directo en tu celular — <strong>sin App Store ni Google Play</strong>, gratis y en segundos.
+      </p>
+      <div class="help-os-tabs">
+        <button class="help-os-tab ${isIos?'active':''}" onclick="openHelpTab('ios')">🍎 iPhone</button>
+        <button class="help-os-tab ${!isIos?'active':''}" onclick="openHelpTab('android')">🤖 Android</button>
+      </div>
+      <div class="help-steps">${renderSteps(isIos?stepsIOS:stepsAndroid)}</div>
+      <div class="help-note">¿Tienes problemas? Escríbenos a<br><strong>hola@radarconciertos.cl</strong></div>
+    `;
+    modal.hidden=false;
+    document.body.style.overflow='hidden';
+  }
+
+  window.openHelpTab=function(os){openHelp(os);};
+
+  btn.addEventListener('click',()=>{
+    const os=isIOS()?'ios':'android';
+    openHelp(os);
+  });
+  closeBtn.addEventListener('click',()=>{
+    modal.hidden=true;
+    document.body.style.overflow='';
+  });
+  modal.addEventListener('click',e=>{
+    if(e.target===modal){modal.hidden=true;document.body.style.overflow='';}
+  });
+})();
+
 /* ═══ RADAR ASISTENTE — Programa de Socios ═══ */
 const TIPO_LABELS={
   bar:'🍻 bares',restaurante:'🍽 restaurantes',hotel:'🏨 hoteles',
